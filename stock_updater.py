@@ -1,3 +1,13 @@
+from decimal import Decimal, InvalidOperation, ROUND_UP
+
+
+CENT = Decimal("0.01")
+
+
+def round_up(value):
+    return value.quantize(CENT, rounding=ROUND_UP)
+
+
 def main():
     print("="*45)
     print("   STOCK PRICE UPDATER")
@@ -18,9 +28,13 @@ def main():
         val_input = val_input.replace(',', '.')
         
         try:
-            base_value = float(val_input)
-        except ValueError:
+            base_value = Decimal(val_input)
+        except InvalidOperation:
             print("Error: Please enter a valid numerical value.")
+            continue
+
+        if not base_value.is_finite() or base_value < 0:
+            print("Error: Please enter a non-negative numerical value.")
             continue
 
         # 2. Ask user to select the multiplier
@@ -34,25 +48,28 @@ def main():
             break
 
         if choice == '1':
-            multiplier = 1.06
+            multiplier = Decimal("1.06")
+            iva = "6%"
         elif choice == '2':
-            multiplier = 1.23
+            multiplier = Decimal("1.23")
+            iva = "23%"
         else:
             print("Error: Invalid selection. Please choose 1 or 2.")
             continue
 
         # 3. Perform calculations
         # First, multiply by the selected multiplier (1.06 or 1.23)
-        productBuyPrice = base_value * multiplier
+        productBuyPrice = round_up(base_value * multiplier)
         
         # Then, multiply that result by 1.4 (profit margin)
-        final_value = productBuyPrice * 1.4
+        final_value = round_up(productBuyPrice * Decimal("1.4"))
 
         # 4. Print the results formatted to 2 decimal places
         print("\n--- Results ---")
-        print(f"Supplier price:           {base_value:.2f}")
-        print(f"IVA: {multiplier} Product Buy price {productBuyPrice:.2f}  <-- (Before multiplying by 1.4)")
-        print(f"Product Sell Price:   {final_value:.2f}  <-- (After multiplying by 1.4)")
+        print(f"Supplier price: {base_value:.2f}")
+        print(f"IVA: {iva}")
+        print(f"Purchase Price: {productBuyPrice:.2f}")
+        print(f"Sale Price: {final_value:.2f}")
         print("-" * 25)
 
 if __name__ == "__main__":
