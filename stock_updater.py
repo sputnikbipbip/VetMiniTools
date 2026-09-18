@@ -64,12 +64,29 @@ def main():
         # Then, multiply that result by 1.4 (profit margin)
         final_value = round_up(productBuyPrice * Decimal("1.4"))
 
+        # Check if we need to divide by number of units (if applicable)
+        units_input = input("Enter the number of units (or press Enter to skip): ").strip()
+        if units_input:
+            try:
+                units = int(units_input)
+                if units <= 0:
+                    print("Error: Please enter a positive integer for the number of units.")
+                    continue
+                final_saleprice__per_unit = round_up(final_value /units)
+                final_purchase_per_unit = round_up(productBuyPrice / units)
+            except ValueError:
+                print("Error: Please enter a valid integer for the number of units.")
+                continue
+
         # 4. Print the results formatted to 2 decimal places
         print("\n--- Results ---")
         print(f"Supplier price: {base_value:.2f}")
         print(f"IVA: {iva}")
         print(f"Purchase Price: {productBuyPrice:.2f}")
         print(f"Sale Price: {final_value:.2f}")
+        if units_input:
+            print(f"[Purchase Price p/Unit: {final_purchase_per_unit:.2f}]")
+            print(f"[Sale Price p/Unit: {final_saleprice__per_unit:.2f}]")
         print("-" * 25)
 
 if __name__ == "__main__":
